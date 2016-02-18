@@ -20,6 +20,7 @@ controller.spawn({
 
 var Phrases = ['Ок','Понял','Записал','Готово','Добре','Не вопрос','Вкусненько']
 var orders = [];
+var usersOrdered = [];
 var str = "";
 var list = "";
 var activeOrder = false;
@@ -48,6 +49,7 @@ controller.on('direct_mention',function(bot,message) {
       bot.api.users.info({'user':userid},function(err,response) {
 
         orders.push(response.user.name + ": " + message.text);
+        usersOrdered.push(response.user.id);
 
       })
 
@@ -99,5 +101,18 @@ controller.hears(['список'],['ambient'],function(bot,message) {
   bot.startPrivateConversation(message,function(err,dm) {
     dm.say(list);
   });
+
+});
+
+controller.hears(['паечная'],['ambient'],function(bot,message) {
+
+  for (i=0;i<usersOrdered.length;i++) {
+
+        userid = usersOrdered[i];
+
+        bot.startPrivateConversation({user: userid}, function(response, convo){
+  convo.say('Открылась паечная в митинг руме. Приятного аппетита!')
+})
+      }
 
 });
