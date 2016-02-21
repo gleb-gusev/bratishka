@@ -21,6 +21,7 @@ controller.spawn({
 var Phrases = ['Ок','Понял','Записал','Готово','Добре','Не вопрос','Вкусненько']
 var orders = [];
 var usersOrdered = [];
+var listUsersOrdered = [];
 var str = "";
 var list = "";
 var activeOrder = false;
@@ -32,8 +33,13 @@ controller.hears(['хелп'],['ambient'], function(bot,message) {
 });
 
 controller.hears(['Открываем заказ'],['ambient'],function(bot,message) {
- activeOrder = true;
- bot.reply(message,"Пишем, что хотим заказать мне в меншены");
+ if (activeOrder == false) {
+  activeOrder = true;
+  bot.reply(message,"Пишем, что хотим заказать мне в меншены");
+ } else {
+  bot.reply(message,"Не ломай меня! Уже ж заказываем!");
+ }
+ 
  
 });
 
@@ -48,9 +54,26 @@ controller.on('direct_mention',function(bot,message) {
 
       bot.api.users.info({'user':userid},function(err,response) {
 
-        orders.push(response.user.name + ": " + message.text);
-        usersOrdered.push(response.user.id);
+        if (response.user.real_name != "") {
+          orders.push("*"+response.user.real_name +"*"+": " + message.text);
 
+          if (listUsersOrdered.indexOf(response.user.id) == -1) {
+
+            listUsersOrdered.push(response.user.id);
+          } 
+          
+
+        } else {
+
+          orders.push("*"+response.user.name +"*"+": " + message.text);
+
+          if (listUsersOrdered.indexOf(response.user.id) == -1) {
+
+            listUsersOrdered.push(response.user.id);
+          } 
+
+        }
+        
       })
 
       
@@ -66,7 +89,11 @@ controller.on('direct_mention',function(bot,message) {
 
 controller.hears(['Закрыт заказ','хватит'],['ambient'],function(bot,message) {
 
-    var date = new Date();
+    if (activeOrder == false) {
+      bot.reply(message,"Так ничего не заказали же!");
+    } else {
+
+      var date = new Date();
 
     // Display the month, day, and year. getMonth() returns a 0-based number.
     var month = date.getMonth()+1;
@@ -89,6 +116,9 @@ controller.hears(['Закрыт заказ','хватит'],['ambient'],function
     list = str;
     str = "";
     
+    }
+
+    
 });
 
 controller.hears(['список'],['ambient'],function(bot,message) {
@@ -105,14 +135,17 @@ controller.hears(['список'],['ambient'],function(bot,message) {
 });
 
 controller.hears(['паечная'],['ambient'],function(bot,message) {
+      usersOrdered = listUsersOrdered
+      listUsersOrdered = [];
 
   for (i=0;i<usersOrdered.length;i++) {
 
         userid = usersOrdered[i];
 
         bot.startPrivateConversation({user: userid}, function(response, convo){
-  convo.say('Открылась паечная в митинг руме. Приятного аппетита!')
+  convo.say('Открылась паечная в митинг руме. Приходите кушать и приятного аппетита!')
 })
       }
+      usersOrdered = [];
 
 });
