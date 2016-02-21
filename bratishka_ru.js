@@ -134,13 +134,15 @@ controller.hears(['список'],['ambient'],function(bot,message) {
 
 });
 
-controller.hears(['паечная'],['ambient'],function(bot,message) {
+controller.hears(['Паечная в митинг руме'],['ambient'],function(bot,message) {
       usersOrdered = listUsersOrdered
       listUsersOrdered = [];
 
   for (i=0;i<usersOrdered.length;i++) {
 
         userid = usersOrdered[i];
+
+        bot.reply(message,'Приглашения отправлены в DM');
 
         bot.startPrivateConversation({user: userid}, function(response, convo){
   convo.say('Открылась паечная в митинг руме. Приходите кушать и приятного аппетита!')
