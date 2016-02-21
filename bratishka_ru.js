@@ -142,12 +142,13 @@ controller.hears(['Паечная в митинг руме'],['ambient'],functio
 
         userid = usersOrdered[i];
 
-        bot.reply(message,'Приглашения отправлены в DM');
+        
 
         bot.startPrivateConversation({user: userid}, function(response, convo){
   convo.say('Открылась паечная в митинг руме. Приходите кушать и приятного аппетита!')
 })
       }
+      bot.reply(message,'Приглашения отправлены в DM');
       usersOrdered = [];
 
 });
